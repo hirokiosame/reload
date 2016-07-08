@@ -1,0 +1,22 @@
+{
+  "name": "reload",
+  "main": "index.js",
+  "homepage": "https://github.com/hirokiosame/reload",
+  "authors": [
+    "Hiroki Osame <hiroki.osame@gmail.com>"
+  ],
+  "description": "Require.js Hot Module Replacement (HMR) implementation",
+  "moduleType": [],
+  "keywords": [
+    "requirejs",
+    "hot module replacement"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
