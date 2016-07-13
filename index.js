@@ -6,7 +6,7 @@ define([
 
 	var cache = {};
 
-	function ping (path) {
+	function getLastModified (path) {
 
 		var promise = $.Deferred();
 		var url = requirejs.s.contexts._.config.baseUrl + path + '.js';
@@ -22,43 +22,49 @@ define([
 		return promise;
 	}
 
-	function watch(paths, callback) {
+	function checkOutdated (lastModifiedDates) {
 
-		var pingReload = function () {
+		var outdated = false;
 
-			// Start watching
+		lastModifiedDates.forEach(function (arg) {
+			var path = arg[0];
+			var lastModified = arg[1];
+
+			if (cache[path] !== lastModified) {
+				outdated = true;
+			}
+
+			cache[path] = lastModified;
+		});
+
+		return outdated;
+	}
+
+	function watch (paths, callback) {
+
+		function checkFileChanges () {
+
 			$.when.apply($, paths.map(function (path) {
 
 				requirejs.undef(path);
-				return ping(path);
+
+				return getLastModified(path);
 
 			})).done(function(){
 
-				var args = [].slice.apply(arguments);
-
-				var reload = false;
-
-				args.forEach(function(arg){
-					var path = arg[0];
-					var lastModified = arg[1];
-
-					if (cache[path] !== lastModified) {
-						reload = true;
-					}
-
-					cache[path] = lastModified;
-				});
+				var lastModifiedDates = [].slice.apply(arguments);
+				var reload = checkOutdated(lastModifiedDates);
 
 				if (reload) {
 					console.info('Reloading', paths);
 					require(paths, callback);
 				}
 			});
-		};
+		}
 
-		pingReload();
+		checkFileChanges();
 
-		return pingReload;
+		return checkFileChanges;
 	}
 
 	function reload (paths, callback, interval) {
@@ -67,7 +73,12 @@ define([
 
 		return {
 			stop: function () {
+
 				clearInterval(watchFiles);
+
+				paths.forEach(function (path) {
+					cache[path] = undefined;
+				});
 			}
 		};
 	}
