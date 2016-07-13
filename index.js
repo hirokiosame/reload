@@ -14,7 +14,7 @@ define([
 		var xhr = $.ajax({
 			type: 'HEAD',
 			url: url + '?' + Date.now(),
-			success: function() {
+			success: function () {
 				promise.resolve([path, xhr.getResponseHeader('Last-Modified')]);
 			}
 		});
@@ -50,7 +50,7 @@ define([
 
 				return getLastModified(path);
 
-			})).done(function(){
+			})).done(function () {
 
 				var lastModifiedDates = [].slice.apply(arguments);
 				var reload = checkOutdated(lastModifiedDates);
